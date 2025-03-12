@@ -5,25 +5,27 @@ global.THREE = require("three");
 require("three/examples/js/controls/OrbitControls");
 
 const canvasSketch = require("canvas-sketch");
+const { attribute } = require("three");
 
 const settings = {
   // Make the loop animated
   animate: true,
   // Get a WebGL canvas rather than 2D
-  context: "webgl"
+  context: "webgl",
+  attributes: { antialias: true }, // removes jagged edges
 };
 
 const sketch = ({ context }) => {
   // Create a renderer
   const renderer = new THREE.WebGLRenderer({
-    canvas: context.canvas
+    canvas: context.canvas,
   });
 
   // WebGL background color
-  renderer.setClearColor("#000", 1);
+  renderer.setClearColor("#000", 1); // colour and alpha (alpha is opacity)
 
   // Setup a camera
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 100);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 100); // field of view, aspect ratio, near, far
   camera.position.set(0, 0, -4);
   camera.lookAt(new THREE.Vector3());
 
@@ -34,12 +36,12 @@ const sketch = ({ context }) => {
   const scene = new THREE.Scene();
 
   // Setup a geometry
-  const geometry = new THREE.SphereGeometry(1, 32, 16);
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
 
   // Setup a material
   const material = new THREE.MeshBasicMaterial({
     color: "red",
-    wireframe: true
+    wireframe: true,
   });
 
   // Setup a mesh with geometry + material
@@ -57,6 +59,7 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
+      mesh.rotation.y = time * 0.15;
       controls.update();
       renderer.render(scene, camera);
     },
@@ -64,7 +67,7 @@ const sketch = ({ context }) => {
     unload() {
       controls.dispose();
       renderer.dispose();
-    }
+    },
   };
 };
 
