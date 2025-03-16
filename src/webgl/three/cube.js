@@ -34,9 +34,8 @@ const sketch = ({ context }) => {
   // Setup your scene
   const scene = new THREE.Scene();
   const palette = random.pick(palettes);
-  console.log(palette);
 
-  const box = new THREE.BoxGeometry(
+  const box = new THREE.BoxGeometry( // add multiple mesh to the same box for better performance
     Math.random(),
     Math.random(),
     Math.random()
@@ -44,7 +43,8 @@ const sketch = ({ context }) => {
   for (let i = 0; i < 60; i++) {
     const mesh = new THREE.Mesh(
       box,
-      new THREE.MeshBasicMaterial({
+      new THREE.MeshStandardMaterial({
+        // mesh basic material is not affected by light
         color: palette[Math.floor(Math.random() * palette.length)],
       })
     );
@@ -62,6 +62,13 @@ const sketch = ({ context }) => {
 
     scene.add(mesh);
   }
+
+  const ambientLight = new THREE.AmbientLight("hsl(0,0%, 40%)");
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(0, 0, 4);
+
+  scene.add(ambientLight);
+  scene.add(light);
 
   // draw each frame
   return {
@@ -89,6 +96,7 @@ const sketch = ({ context }) => {
     // Update & render your scene here
     render({ time }) {
       // controls.update();
+      scene.rotation.y = time * 0.15;
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
